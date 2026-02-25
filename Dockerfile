@@ -35,4 +35,4 @@ RUN sed -ri -e 's!/var/www/!${APACHE_DOCUMENT_ROOT}!g' /etc/apache2/apache2.conf
 EXPOSE 80
 
 # Comando para ejecutar las migraciones y arrancar Apache
-CMD php artisan migrate --force && apache2-foreground
+CMD php artisan storage:link && php artisan migrate --force && apache2-foreground
