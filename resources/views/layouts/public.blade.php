@@ -61,38 +61,55 @@
       x-init="$watch('darkMode', val => val ? document.documentElement.classList.add('dark') : document.documentElement.classList.remove('dark')); if(darkMode) document.documentElement.classList.add('dark');">
 
     <!-- Header / Navbar -->
-    <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/80 dark:bg-darkcard/80 border-b border-slate-200 dark:border-slate-700 transition-colors duration-200">
-        <div class="container mx-auto px-4 py-3 flex justify-between items-center">
-            <a href="/" class="text-2xl font-bold flex items-center gap-2 text-primary-600 dark:text-primary-400">
-                <i class="fa-solid fa-city"></i> Tu Propiedad Cerca
-            </a>
-            <nav class="hidden md:flex space-x-6 items-center font-medium text-sm">
-                <a href="/venta" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition">Venta</a>
-                <a href="/alquiler" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition">Alquiler</a>
-                <a href="/publicar" class="border border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 px-4 py-1.5 rounded-md hover:bg-primary-600 hover:text-white dark:hover:bg-primary-400 dark:hover:text-slate-900 transition">PUBLICAR</a>
+    <header class="sticky top-0 z-40 w-full backdrop-blur-md bg-white/80 dark:bg-darkcard/80 border-b border-slate-200 dark:border-slate-700 transition-colors duration-200" x-data="{ mobileMenuOpen: false }">
+        <div class="container mx-auto px-4 py-3 flex flex-wrap justify-between items-center">
+            <div class="flex justify-between items-center w-full md:w-auto">
+                <a href="/" class="text-2xl font-bold flex items-center gap-2 text-primary-600 dark:text-primary-400">
+                    <i class="fa-solid fa-city"></i> Tu Propiedad Cerca
+                </a>
+                
+                <!-- Mobile Menu Button -->
+                <button @click="mobileMenuOpen = !mobileMenuOpen" class="md:hidden text-slate-500 hover:text-primary-600 dark:text-slate-400 transition focus:outline-none p-2 rounded-md hover:bg-slate-100 dark:hover:bg-slate-800">
+                    <i class="fa-solid fa-bars text-xl" x-show="!mobileMenuOpen"></i>
+                    <i class="fa-solid fa-xmark text-xl" x-show="mobileMenuOpen" style="display: none;"></i>
+                </button>
+            </div>
+
+            <!-- Navigation Links -->
+            <nav :class="mobileMenuOpen ? 'flex flex-col w-full mt-4 space-y-4 pb-2' : 'hidden'" class="md:flex md:flex-row md:w-auto md:space-y-0 md:space-x-6 md:mt-0 md:items-center font-medium text-sm">
+                <a href="/venta" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition text-center md:text-left">Venta</a>
+                <a href="/alquiler" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition text-center md:text-left">Alquiler</a>
+                <div class="flex justify-center md:block">
+                    <a href="/publicar" class="border border-primary-600 text-primary-600 dark:border-primary-400 dark:text-primary-400 px-4 py-1.5 rounded-md hover:bg-primary-600 hover:text-white dark:hover:bg-primary-400 dark:hover:text-slate-900 transition inline-block">PUBLICAR</a>
+                </div>
                 
                 <!-- Dark Mode Toggle -->
-                <button @click="toggleDarkMode()" class="text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none">
+                <button @click="toggleDarkMode()" class="text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 transition p-2 rounded-full hover:bg-slate-100 dark:hover:bg-slate-800 focus:outline-none flex justify-center w-full md:w-auto">
                     <i class="fa-solid fa-moon" x-show="!darkMode"></i>
                     <i class="fa-solid fa-sun" x-show="darkMode" style="display: none;"></i>
+                    <span class="ml-2 md:hidden block" x-text="darkMode ? 'Modo claro' : 'Modo oscuro'"></span>
                 </button>
 
                 @auth
-                    <div class="relative flex items-center space-x-4 border-l border-slate-300 dark:border-slate-700 pl-4 ml-2">
+                    <div class="flex flex-col md:flex-row items-center border-t md:border-t-0 md:border-l border-slate-300 dark:border-slate-700 md:pl-4 pt-4 md:pt-0 space-y-4 md:space-y-0 md:space-x-4 w-full md:w-auto">
                         <a href="/dashboard" class="flex items-center gap-2 text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition">
                             <div class="w-8 h-8 rounded-full bg-primary-100 dark:bg-primary-900/30 text-primary-600 dark:text-primary-400 flex items-center justify-center border border-primary-200 dark:border-primary-800">
                                 <span class="font-bold text-xs">{{ substr(Auth::user()->name, 0, 1) }}</span>
                             </div>
+                            <span class="block md:hidden">{{ Auth::user()->name }}</span>
                             <span class="hidden lg:block">{{ Auth::user()->name }}</span>
                         </a>
-                        <button @click="showLogoutModal = true" class="text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition" title="Salir">
+                        <button @click="showLogoutModal = true" class="text-slate-500 hover:text-red-600 dark:hover:text-red-400 transition flex items-center gap-2" title="Salir">
                             <i class="fa-solid fa-right-from-bracket text-lg"></i>
+                            <span class="block md:hidden">Cerrar Sesión</span>
                         </button>
                     </div>
                 @else
-                    <a href="/login" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition flex items-center gap-2">
-                        <i class="fa-solid fa-user"></i> Iniciar sesión
-                    </a>
+                    <div class="flex justify-center border-t md:border-t-0 border-slate-200 dark:border-slate-700 pt-4 md:pt-0 w-full md:w-auto">
+                        <a href="/login" class="text-slate-600 dark:text-slate-300 hover:text-primary-600 dark:hover:text-primary-400 transition flex items-center gap-2">
+                            <i class="fa-solid fa-user"></i> Iniciar sesión
+                        </a>
+                    </div>
                 @endauth
             </nav>
         </div>
