@@ -44,11 +44,12 @@
         [x-cloak] { display: none !important; }
     </style>
 </head>
-<body class="bg-slate-50 text-slate-800 dark:bg-darkbg dark:text-slate-200 font-sans antialiased flex h-screen overflow-hidden transition-colors duration-200" 
+    <body class="bg-slate-50 text-slate-800 dark:bg-darkbg dark:text-slate-200 font-sans antialiased flex h-screen overflow-hidden transition-colors duration-200" 
       x-data="{ 
           darkMode: localStorage.getItem('darkMode') === 'true' || (!('darkMode' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches),
           showLogoutModal: false,
           showUpgradeModal: false,
+          isSidebarOpen: false,
           toggleDarkMode() {
               this.darkMode = !this.darkMode;
               localStorage.setItem('darkMode', this.darkMode);
@@ -61,10 +62,16 @@
         $isFreePlanFull = ($tenantInfo && $tenantInfo->plan === 'Gratuito') && \App\Models\Local::where('tenant_id', $tenantInfo->id)->count() >= 1;
     @endphp
 
+    <!-- Sidebar Overlay for Mobile -->
+    <div x-show="isSidebarOpen" @click="isSidebarOpen = false" class="fixed inset-0 z-30 bg-slate-900/50 backdrop-blur-sm md:hidden" x-cloak></div>
+
     <!-- Sidebar -->
-    <div class="w-64 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] border-r border-slate-200 dark:border-slate-800 z-20 transition-colors duration-200">
+    <div :class="isSidebarOpen ? 'translate-x-0' : '-translate-x-full'" class="fixed md:static inset-y-0 left-0 w-64 bg-white dark:bg-slate-950 text-slate-700 dark:text-slate-300 flex flex-col h-full shadow-[4px_0_24px_rgba(0,0,0,0.02)] border-r border-slate-200 dark:border-slate-800 z-40 transition-transform duration-300 ease-in-out md:translate-x-0">
         <!-- User Profile Area -->
-        <div class="p-6 text-center border-b border-slate-200 dark:border-slate-800/50">
+        <div class="p-6 text-center border-b border-slate-200 dark:border-slate-800/50 relative">
+            <button @click="isSidebarOpen = false" class="md:hidden absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-slate-200 focus:outline-none">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
             <div class="w-16 h-16 bg-primary-100 dark:bg-primary-900/50 rounded-full mx-auto flex items-center justify-center mb-3 shadow-inner border border-primary-200 dark:border-primary-500/30">
                 <span class="text-2xl font-bold text-primary-600 dark:text-primary-400">{{ substr(Auth::user()->name ?? 'U', 0, 1) }}</span>
             </div>
@@ -159,8 +166,13 @@
     <div class="flex-1 flex flex-col h-full overflow-hidden bg-slate-50 dark:bg-darkbg transition-colors duration-200">
         
         <!-- Top bar menu -->
-        <header class="bg-white dark:bg-darkcard border-b border-slate-200 dark:border-slate-800 z-10 flex justify-between items-center px-6 py-3 h-16 transition-colors duration-200 shadow-sm">
-            <h1 class="text-xl font-bold text-slate-800 dark:text-white">@yield('header_title', 'Panel de Control')</h1>
+        <header class="bg-white dark:bg-darkcard border-b border-slate-200 dark:border-slate-800 z-10 flex justify-between items-center px-4 md:px-6 py-3 h-16 transition-colors duration-200 shadow-sm gap-2">
+            <div class="flex items-center gap-3 overflow-hidden">
+                <button @click="isSidebarOpen = true" class="md:hidden text-slate-500 hover:text-primary-600 dark:text-slate-400 dark:hover:text-primary-400 focus:outline-none shrink-0">
+                    <i class="fa-solid fa-bars text-xl"></i>
+                </button>
+                <h1 class="text-xl font-bold text-slate-800 dark:text-white truncate">@yield('header_title', 'Panel de Control')</h1>
+            </div>
             
             <div class="flex items-center space-x-4">
                 <!-- Dark Mode Toggle -->
